@@ -12,7 +12,7 @@ class Key:
     PRINT_SCREEN = "<print_screen>"
     PAUSE = "<pause>"
     MENU = "<menu>"
-    
+
     # Modifier keys
     CONTROL = "<ctrl>"
     ALT = "<alt>"
@@ -23,7 +23,7 @@ class Key:
     CAPSLOCK = "<capslock>"
     NUMLOCK = "<numlock>"
     META = "<meta>"
-    
+
     F1 = "<f1>"
     F2 = "<f2>"
     F3 = "<f3>"
@@ -36,7 +36,7 @@ class Key:
     F10 = "<f10>"
     F11 = "<f11>"
     F12 = "<f12>"
-    
+
     # Other
     ESCAPE = "<escape>"
     INSERT = "<insert>"
