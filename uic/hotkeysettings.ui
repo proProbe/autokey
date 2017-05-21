@@ -27,6 +27,19 @@
       <number>10</number>
      </property>
      <item>
+      <widget class="KPushButton" name="capslockButton">
+       <property name="text">
+        <string>CapsLock</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="KPushButton" name="controlButton">
        <property name="text">
         <string>Control</string>

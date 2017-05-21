@@ -57,12 +57,12 @@ class AbbrListItem(QListWidgetItem):
             QListWidgetItem.setData(self, role, value)
 
 class AbbrSettings(QWidget, abbrsettings.Ui_Form):
-    
+
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         abbrsettings.Ui_Form.__init__(self)
         self.setupUi(self)
-        
+
         for item in WORD_CHAR_OPTIONS_ORDERED:
             self.wordCharCombo.addItem(item)
 
@@ -85,21 +85,21 @@ class AbbrSettings(QWidget, abbrsettings.Ui_Form):
             row = self.abbrListWidget.row(item)
             self.abbrListWidget.takeItem(row)
             del item
-            
+
         if self.abbrListWidget.count() == 0:
             self.removeButton.setEnabled(False)
 
     def on_abbrListWidget_itemDoubleClicked(self, item):
         self.abbrListWidget.editItem(item)
-        
+
     def on_ignoreCaseCheckbox_stateChanged(self, state):
         if not self.ignoreCaseCheckbox.isChecked():
             self.matchCaseCheckbox.setChecked(False)
-            
+
     def on_matchCaseCheckbox_stateChanged(self, state):
         if self.matchCaseCheckbox.isChecked():
             self.ignoreCaseCheckbox.setChecked(True)
-            
+
     def on_immediateCheckbox_stateChanged(self, state):
         if self.immediateCheckbox.isChecked():
             self.omitTriggerCheckbox.setChecked(False)
@@ -120,7 +120,7 @@ class AbbrSettingsDialog(KDialog):
         self.setPlainCaption(i18n("Set Abbreviations"))
         self.setModal(True)
         #self.connect(self, SIGNAL("okClicked()"), self.on_okClicked)
-        
+
     def load(self, item):
         self.targetItem = item
         self.widget.abbrListWidget.clear()
@@ -132,7 +132,7 @@ class AbbrSettingsDialog(KDialog):
             self.widget.abbrListWidget.setCurrentRow(0)
         else:
             self.widget.removeButton.setEnabled(False)
-        
+
         self.widget.removeTypedCheckbox.setChecked(item.backspace)
 
         self.__resetWordCharCombo()
@@ -148,46 +148,46 @@ class AbbrSettingsDialog(KDialog):
             # Custom wordchar regex used
             self.widget.wordCharCombo.addItem(model.extract_wordchars(wordCharRegex))
             self.widget.wordCharCombo.setCurrentIndex(len(WORD_CHAR_OPTIONS))
-        
+
         if isinstance(item, model.Folder):
             self.widget.omitTriggerCheckbox.setVisible(False)
         else:
             self.widget.omitTriggerCheckbox.setVisible(True)
             self.widget.omitTriggerCheckbox.setChecked(item.omitTrigger)
-        
+
         if isinstance(item, model.Phrase):
             self.widget.matchCaseCheckbox.setVisible(True)
             self.widget.matchCaseCheckbox.setChecked(item.matchCase)
         else:
             self.widget.matchCaseCheckbox.setVisible(False)
-        
+
         self.widget.ignoreCaseCheckbox.setChecked(item.ignoreCase)
         self.widget.triggerInsideCheckbox.setChecked(item.triggerInside)
         self.widget.immediateCheckbox.setChecked(item.immediate)
-        
+
     def save(self, item):
         item.modes.append(model.TriggerMode.ABBREVIATION)
         item.clear_abbreviations()
         item.abbreviations = self.get_abbrs()
-        
+
         item.backspace = self.widget.removeTypedCheckbox.isChecked()
-        
+
         option = str(self.widget.wordCharCombo.currentText())
         if option in WORD_CHAR_OPTIONS:
             item.set_word_chars(WORD_CHAR_OPTIONS[option])
         else:
             item.set_word_chars(model.make_wordchar_re(option))
-        
+
         if not isinstance(item, model.Folder):
             item.omitTrigger = self.widget.omitTriggerCheckbox.isChecked()
-            
+
         if isinstance(item, model.Phrase):
             item.matchCase = self.widget.matchCaseCheckbox.isChecked()
-            
+
         item.ignoreCase = self.widget.ignoreCaseCheckbox.isChecked()
         item.triggerInside = self.widget.triggerInsideCheckbox.isChecked()
         item.immediate = self.widget.immediateCheckbox.isChecked()
-        
+
     def reset(self):
         self.widget.removeButton.setEnabled(False)
         self.widget.abbrListWidget.clear()
@@ -204,13 +204,13 @@ class AbbrSettingsDialog(KDialog):
         for item in WORD_CHAR_OPTIONS_ORDERED:
             self.widget.wordCharCombo.addItem(item)
         self.widget.wordCharCombo.setCurrentIndex(0)
-        
+
     def get_abbrs(self):
         ret = []
         for i in range(self.widget.abbrListWidget.count()):
             text = self.widget.abbrListWidget.item(i).text()
             ret.append(str(text))
-            
+
         return ret
 
     def get_abbrs_readable(self):
@@ -228,7 +228,7 @@ class AbbrSettingsDialog(KDialog):
                             self.widget.addButton, self): return False
 
         return True
-        
+
     def slotButtonClicked(self, button):
         if button == KDialog.Ok:
             if self.__valid():
@@ -239,26 +239,26 @@ class AbbrSettingsDialog(KDialog):
 
 
 class HotkeySettings(QWidget, hotkeysettings.Ui_Form):
-    
+
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         hotkeysettings.Ui_Form.__init__(self)
-        self.setupUi(self)    
+        self.setupUi(self)
 
     # ---- Signal handlers
-    
+
     def on_setButton_pressed(self):
         self.setButton.setEnabled(False)
         self.keyLabel.setText(i18n("Press a key or combination..."))
         self.grabber = iomediator.KeyGrabber(self.parentWidget())
-        self.grabber.start()  
+        self.grabber.start()
 
 class HotkeySettingsDialog(KDialog):
-    
+
     KEY_MAP = {
                ' ' : "<space>",
                }
-    
+
     REVERSE_KEY_MAP = {}
     for key, value in KEY_MAP.items():
         REVERSE_KEY_MAP[value] = key
@@ -282,6 +282,7 @@ class HotkeySettingsDialog(KDialog):
             self.widget.superButton.setChecked(iomediator.Key.SUPER in item.modifiers)
             self.widget.hyperButton.setChecked(iomediator.Key.HYPER in item.modifiers)
             self.widget.metaButton.setChecked(iomediator.Key.META in item.modifiers)
+            self.widget.capslockButton.setChecked(iomediator.Key.CAPSLOCK in item.modifiers)
 
             key = item.hotKey
             if key in self.KEY_MAP:
@@ -290,16 +291,16 @@ class HotkeySettingsDialog(KDialog):
                 keyText = key
             self._setKeyLabel(keyText)
             self.key = keyText
-            
+
         else:
             self.reset()
-            
+
     def save(self, item):
         item.modes.append(model.TriggerMode.HOTKEY)
-        
+
         # Build modifier list
         modifiers = self.build_modifiers()
-            
+
         keyText = self.key
         if keyText in self.REVERSE_KEY_MAP:
             key = self.REVERSE_KEY_MAP[keyText]
@@ -308,7 +309,7 @@ class HotkeySettingsDialog(KDialog):
 
         assert key != None, "Attempt to set hotkey with no key"
         item.set_hotkey(modifiers, key)
-        
+
     def reset(self):
         self.widget.controlButton.setChecked(False)
         self.widget.altButton.setChecked(False)
@@ -332,17 +333,18 @@ class HotkeySettingsDialog(KDialog):
         self.widget.superButton.setChecked(iomediator.Key.SUPER in modifiers)
         self.widget.hyperButton.setChecked(iomediator.Key.HYPER in modifiers)
         self.widget.metaButton.setChecked(iomediator.Key.META in modifiers)
+        self.widget.capslockButton.setChecked(iomediator.Key.CAPSLOCK in modifiers)
 
         self.widget.setButton.setEnabled(True)
-            
+
     def cancel_grab(self):
         self.widget.setButton.setEnabled(True)
         self._setKeyLabel(self.key)
-        
+
     def build_modifiers(self):
         modifiers = []
         if self.widget.controlButton.isChecked():
-            modifiers.append(iomediator.Key.CONTROL) 
+            modifiers.append(iomediator.Key.CONTROL)
         if self.widget.altButton.isChecked():
             modifiers.append(iomediator.Key.ALT)
         if self.widget.shiftButton.isChecked():
@@ -353,11 +355,13 @@ class HotkeySettingsDialog(KDialog):
             modifiers.append(iomediator.Key.HYPER)
         if self.widget.metaButton.isChecked():
             modifiers.append(iomediator.Key.META)
-        
+        if self.widget.capslockButton.isChecked():
+            modifiers.append(iomediator.Key.CAPSLOCK)
+
         modifiers.sort()
         return modifiers
-        
-                
+
+
     def slotButtonClicked(self, button):
         if button == KDialog.Ok:
             if self.__valid():
@@ -365,19 +369,19 @@ class HotkeySettingsDialog(KDialog):
         else:
             self.load(self.targetItem)
             KDialog.slotButtonClicked(self, button)
-            
+
     def _setKeyLabel(self, key):
         self.widget.keyLabel.setText(i18n("Key: ") + key)
-        
+
     def __valid(self):
         if not validate(self.key is not None, i18n("You must specify a key for the hotkey."),
                             None, self): return False
-        
+
         return True
-        
-        
+
+
 class GlobalHotkeyDialog(HotkeySettingsDialog):
-    
+
     def load(self, item):
         self.targetItem = item
         if item.enabled:
@@ -387,6 +391,7 @@ class GlobalHotkeyDialog(HotkeySettingsDialog):
             self.widget.superButton.setChecked(iomediator.Key.SUPER in item.modifiers)
             self.widget.hyperButton.setChecked(iomediator.Key.HYPER in item.modifiers)
             self.widget.metaButton.setChecked(iomediator.Key.META in item.modifiers)
+            self.widget.capslockButton.setChecked(iomediator.Key.CAPSLOCK in item.modifiers)
 
             key = item.hotKey
             if key in self.KEY_MAP:
@@ -395,15 +400,15 @@ class GlobalHotkeyDialog(HotkeySettingsDialog):
                 keyText = key
             self._setKeyLabel(keyText)
             self.key = keyText
-            
+
         else:
             self.reset()
-        
-        
+
+
     def save(self, item):
         # Build modifier list
         modifiers = self.build_modifiers()
-            
+
         keyText = self.key
         if keyText in self.REVERSE_KEY_MAP:
             key = self.REVERSE_KEY_MAP[keyText]
@@ -412,10 +417,10 @@ class GlobalHotkeyDialog(HotkeySettingsDialog):
 
         assert key != None, "Attempt to set hotkey with no key"
         item.set_hotkey(modifiers, key)
-        
-        
+
+
 class WindowFilterSettings(QWidget, windowfiltersettings.Ui_Form):
-    
+
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         windowfiltersettings.Ui_Form.__init__(self)
@@ -440,10 +445,10 @@ class WindowFilterSettingsDialog(KDialog):
         self.setButtons(KDialog.ButtonCodes(KDialog.ButtonCode(KDialog.Ok | KDialog.Cancel)))
         self.setPlainCaption(i18n("Set Window Filter"))
         self.setModal(True)
-        
+
     def load(self, item):
         self.targetItem = item
-        
+
         if not isinstance(item, model.Folder):
             self.widget.recursiveCheckBox.hide()
         else:
@@ -454,21 +459,21 @@ class WindowFilterSettingsDialog(KDialog):
         else:
             self.widget.triggerRegexLineEdit.setText(item.get_filter_regex())
             self.widget.recursiveCheckBox.setChecked(item.isRecursive)
-            
+
     def save(self, item):
         item.set_window_titles(self.get_filter_text())
         item.set_filter_recursive(self.get_is_recursive())
 
     def get_is_recursive(self):
         return self.widget.recursiveCheckBox.isChecked()
-            
+
     def reset(self):
         self.widget.triggerRegexLineEdit.setText("")
         self.widget.recursiveCheckBox.setChecked(False)
-    
+
     def reset_focus(self):
         self.widget.triggerRegexLineEdit.setFocus()
-        
+
     def get_filter_text(self):
         return str(self.widget.triggerRegexLineEdit.text())
 
@@ -490,9 +495,9 @@ class WindowFilterSettingsDialog(KDialog):
     def slotButtonClicked(self, button):
         if button == KDialog.Cancel:
             self.load(self.targetItem)
-            
+
         KDialog.slotButtonClicked(self, button)
-        
+
 
 
 class DetectSettings(QWidget, detectdialog.Ui_Form):
@@ -526,14 +531,14 @@ class DetectDialog(KDialog):
         else:
             return self.windowInfo[0]
 
-        
+
 class RecordSettings(QWidget, recorddialog.Ui_Form):
-    
+
     def __init__(self, parent):
         QWidget.__init__(self, parent)
         recorddialog.Ui_Form.__init__(self)
         self.setupUi(self)
-        
+
 class RecordDialog(KDialog):
 
     def __init__(self, parent, closure):
@@ -544,16 +549,16 @@ class RecordDialog(KDialog):
         self.setPlainCaption(i18n("Record Script"))
         self.setModal(True)
         self.closure = closure
-        
+
     def get_record_keyboard(self):
         return self.widget.recKeyboardButton.isChecked()
-        
+
     def get_record_mouse(self):
         return self.widget.recMouseButton.isChecked()
 
     def get_delay(self):
         return self.widget.secondsSpinBox.value()
-        
+
     def slotButtonClicked(self, button):
         if button == KDialog.Ok:
             KDialog.slotButtonClicked(self, button)
@@ -561,4 +566,3 @@ class RecordDialog(KDialog):
         else:
             self.closure(False, self.get_record_keyboard(), self.get_record_mouse(), self.get_delay())
             KDialog.slotButtonClicked(self, button)
-
