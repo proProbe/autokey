@@ -20,7 +20,8 @@ class Key:
     SHIFT = "<shift>"
     SUPER = "<super>"
     HYPER = "<hyper>"
-    CAPSLOCK = "<capslock>"
+    # CAPSLOCK = "<capslock>"
+    CAPSLOCK = "<code66>"
     NUMLOCK = "<numlock>"
     META = "<meta>"
 
